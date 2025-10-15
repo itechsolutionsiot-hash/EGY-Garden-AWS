@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenTech - Login</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .logo { 
+            text-align: center; 
+            margin-bottom: 30px;
+            color: #2d5016;
+        }
+        
+        .logo h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 10px;
+        }
+        
+        .logo h2 {
+            font-size: 1.5em;
+            color: #4a7c2a;
+        }
+        
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input { 
+            width: 100%; 
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover { 
+            background: #45a049; 
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .setup-link {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .setup-link a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .setup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .debug-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .debug-info h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>🌱</h1>
+            <h2>GreenTech Relay Control</h2>
+            <p style="color: #666; margin-top: 10px;">Agricultural Automation System</p>
+        </div>
+        
+        <div id="alert" class="alert"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required placeholder="Enter your username" value="Kareem">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" required placeholder="Enter your password" value="kareem1234">
+            </div>
+            
+            <button type="submit" id="loginButton">
+                <span id="buttonText">Login</span>
+                <span id="buttonLoading" class="loading" style="display: none;"></span>
+            </button>
+        </form>
+        
+        <div class="setup-link">
+            <p>New device? <a href="http://192.168.4.1" target="_blank">Setup your device first</a></p>
+        </div>
+
+        <div class="debug-info">
+            <h4>Debug Information:</h4>
+            <div id="debugOutput">Page loaded successfully</div>
+            <button type="button" onclick="testConnection()" style="margin-top: 10px; padding: 8px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Connection</button>
+        </div>
+    </div>
+
+    <script>
+        // Debug function to test server connection
+        async function testConnection() {
+            const debugOutput = document.getElementById('debugOutput');
+            try {
+                debugOutput.innerHTML = 'Testing server connection...';
+                
+                // Test health endpoint
+                const healthResponse = await fetch('/api/health');
+                const healthData = await healthResponse.json();
+                debugOutput.innerHTML += `<br>✅ Health check: ${healthData.status}`;
+                
+                // Test users endpoint
+                const usersResponse = await fetch('/api/debug/users');
+                const usersData = await usersResponse.json();
+                debugOutput.innerHTML += `<br>✅ Users check: ${usersData.success ? usersData.users.length + ' users found' : 'Failed'}`;
+                
+                if (usersData.success) {
+                    debugOutput.innerHTML += `<br>📋 Users: ${usersData.users.map(u => u.username).join(', ')}`;
+                }
+                
+            } catch (error) {
+                debugOutput.innerHTML += `<br>❌ Connection error: ${error.message}`;
+            }
+        }
+
+        // Enhanced login function
+        async function handleLogin(event) {
+            if (event) event.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const alert = document.getElementById('alert');
+            const loginButton = document.getElementById('loginButton');
+            const buttonText = document.getElementById('buttonText');
+            const buttonLoading = document.getElementById('buttonLoading');
+            const debugOutput = document.getElementById('debugOutput');
+            
+            // Show loading state
+            loginButton.disabled = true;
+            buttonText.textContent = 'Logging in...';
+            buttonLoading.style.display = 'inline-block';
+            
+            // Clear previous alerts
+            alert.style.display = 'none';
+            alert.textContent = '';
+            
+            debugOutput.innerHTML = `Attempting login for: ${username}`;
+
+            try {
+                console.log('🔐 Attempting login for user:', username);
+                
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                console.log('📨 Response status:', response.status);
+                console.log('📨 Response headers:', response.headers);
+                
+                const data = await response.json();
+                console.log('📊 Response data:', data);
+
+                debugOutput.innerHTML += `<br>📨 Response: ${response.status} ${response.statusText}`;
+                debugOutput.innerHTML += `<br>📊 Data: ${JSON.stringify(data)}`;
+                
+                if (data.success) {
+                    alert.className = 'alert success';
+                    alert.textContent = '✅ ' + data.message;
+                    alert.style.display = 'block';
+                    
+                    // Store user info in sessionStorage
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+                    console.log('💾 User stored in sessionStorage:', data.user);
+                    
+                    debugOutput.innerHTML += `<br>✅ Login successful! Redirecting...`;
+                    
+                    // Redirect to dashboard after short delay
+                    setTimeout(() => {
+                        console.log('🔄 Redirecting to dashboard...');
+                        window.location.href = '/dashboard';
+                    }, 1000);
+                    
+                } else {
+                    alert.className = 'alert error';
+                    alert.textContent = '❌ ' + data.message;
+                    alert.style.display = 'block';
+                    
+                    debugOutput.innerHTML += `<br>❌ Login failed: ${data.message}`;
+                    
+                    // Reset button state
+                    loginButton.disabled = false;
+                    buttonText.textContent = 'Login';
+                    buttonLoading.style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('🚨 Login error:', error);
+                
+                alert.className = 'alert error';
+                alert.textContent = '❌ Network error. Please check your connection and try again.';
+                alert.style.display = 'block';
+                
+                debugOutput.innerHTML += `<br>🚨 Network error: ${error.message}`;
+                
+                // Reset button state
+                loginButton.disabled = false;
+                buttonText.textContent = 'Login';
+                buttonLoading.style.display = 'none';
+            }
+        }
+
+        // Add some helpful debugging on page load
+        console.log('🔧 Login page loaded successfully');
+        console.log('🌐 API endpoint:', window.location.origin + '/api/login');
+        
+        // Test server connectivity on load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 1000);
+        });
+
+        // Attach event listener
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+        // Auto-login for testing (remove in production)
+        console.log('🔑 Auto-filling credentials for testing');
+        
+        // Optional: Auto-submit for testing (comment out in production)
+        // setTimeout(() => {
+        //     console.log('🤖 Auto-submitting login form for testing');
+        //     handleLogin();
+        // }, 2000);
+    </script>
+</body>
+</html>
