@@ -5,348 +5,641 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GreenTech - Login</title>
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
+        :root {
+            --primary: #2E7D32;
+            --primary-dark: #1B5E20;
+            --primary-light: #4CAF50;
+            --secondary: #FF9800;
+            --error: #D32F2F;
+            --success: #388E3C;
+            --warning: #F57C00;
+            --gray-50: #FAFAFA;
+            --gray-100: #F5F5F5;
+            --gray-200: #EEEEEE;
+            --gray-300: #E0E0E0;
+            --gray-600: #757575;
+            --gray-800: #424242;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            line-height: 1.6;
         }
-        
+
         .login-container {
             background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 0;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
+            overflow: hidden;
+            position: relative;
         }
-        
-        .logo { 
-            text-align: center; 
-            margin-bottom: 30px;
-            color: #2d5016;
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
         }
-        
-        .logo h1 { 
-            font-size: 2.5em; 
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
             margin-bottom: 10px;
         }
-        
+
+        .logo-icon {
+            font-size: 2.5em;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .logo-text {
+            text-align: left;
+        }
+
+        .logo h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
         .logo h2 {
-            font-size: 1.5em;
-            color: #4a7c2a;
+            font-size: 0.95em;
+            font-weight: 400;
+            opacity: 0.9;
         }
-        
-        .form-group { 
-            margin-bottom: 20px; 
+
+        .login-body {
+            padding: 40px;
         }
-        
-        label { 
-            display: block; 
-            margin-bottom: 8px; 
+
+        .tabs {
+            display: flex;
+            background: var(--gray-100);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
             font-weight: 600;
-            color: #333;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: var(--transition);
         }
-        
-        input { 
-            width: 100%; 
-            padding: 12px 15px;
-            border: 2px solid #e1e1e1;
+
+        .tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 0.95em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
             border-radius: 8px;
             font-size: 16px;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            background: white;
         }
-        
+
         input:focus {
             outline: none;
-            border-color: #4CAF50;
+            border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
-        
-        button { 
-            width: 100%; 
-            padding: 12px;
-            background: #4CAF50;
+
+        input:valid {
+            border-color: var(--gray-300);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
         }
-        
-        button:hover { 
-            background: #45a049; 
+
+        button[type="submit"]:hover {
+            background: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
         }
-        
-        button:active {
+
+        button[type="submit"]:active {
             transform: translateY(0);
         }
-        
-        button:disabled {
-            background: #cccccc;
+
+        button[type="submit"]:disabled {
+            background: var(--gray-300);
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
-        
+
         .alert {
-            padding: 12px;
+            padding: 16px;
             border-radius: 8px;
             margin-bottom: 20px;
             text-align: center;
             display: none;
             animation: slideIn 0.3s ease;
+            font-weight: 500;
         }
-        
+
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .alert.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #FFEBEE;
+            color: var(--error);
+            border: 1px solid #FFCDD2;
         }
-        
+
         .alert.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: #E8F5E9;
+            color: var(--success);
+            border: 1px solid #C8E6C9;
         }
-        
+
+        .alert.info {
+            background: #E3F2FD;
+            color: #1976D2;
+            border: 1px solid #BBDEFB;
+        }
+
         .setup-link {
             text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--gray-200);
         }
-        
+
         .setup-link a {
-            color: #4CAF50;
+            color: var(--primary);
             text-decoration: none;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
         }
-        
+
         .setup-link a:hover {
             text-decoration: underline;
+            color: var(--primary-dark);
         }
-        
+
         .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid #ffffff;
+            border: 3px solid rgba(255,255,255,0.3);
             border-radius: 50%;
-            border-top-color: transparent;
+            border-top-color: white;
             animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
         .debug-info {
-            background: #f8f9fa;
-            padding: 15px;
+            background: var(--gray-50);
+            padding: 20px;
             border-radius: 8px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #666;
+            margin-top: 24px;
+            font-size: 0.85em;
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
         }
 
         .debug-info h4 {
-            margin-bottom: 10px;
-            color: #333;
+            margin-bottom: 12px;
+            color: var(--gray-800);
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .debug-info h4:before {
+            content: "🔧";
+        }
+
+        .debug-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .debug-actions button {
+            padding: 8px 12px;
+            background: var(--gray-300);
+            color: var(--gray-800);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+
+        .debug-actions button:hover {
+            background: var(--gray-400);
+        }
+
+        .user-type-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            margin-left: 6px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+            }
+            
+            .login-body {
+                padding: 30px 20px;
+            }
+            
+            .login-header {
+                padding: 24px 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <div class="logo">
-            <h1>🌱</h1>
-            <h2>GreenTech Relay Control</h2>
-            <p style="color: #666; margin-top: 10px;">Agricultural Automation System</p>
-        </div>
-        
-        <div id="alert" class="alert"></div>
-        
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" required placeholder="Enter your username" value="Kareem">
+        <div class="login-header">
+            <div class="logo">
+                <div class="logo-icon">🌱</div>
+                <div class="logo-text">
+                    <h1>GreenTech</h1>
+                    <h2>Agricultural Automation System</h2>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" required placeholder="Enter your password" value="kareem1234">
-            </div>
-            
-            <button type="submit" id="loginButton">
-                <span id="buttonText">Login</span>
-                <span id="buttonLoading" class="loading" style="display: none;"></span>
-            </button>
-        </form>
-        
-        <div class="setup-link">
-            <p>New device? <a href="http://192.168.4.1" target="_blank">Setup your device first</a></p>
         </div>
 
-        <div class="debug-info">
-            <h4>Debug Information:</h4>
-            <div id="debugOutput">Page loaded successfully</div>
-            <button type="button" onclick="testConnection()" style="margin-top: 10px; padding: 8px 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Test Connection</button>
+        <div class="login-body">
+            <div class="tabs">
+                <button class="tab active" data-tab="user">User Login</button>
+                <button class="tab" data-tab="admin">Admin Login</button>
+            </div>
+
+            <div id="alert" class="alert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" required placeholder="Enter your username" value="Kareem">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" required placeholder="Enter your password" value="kareem1234">
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">👁️</button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginButton">
+                    <span id="buttonText">Login to Dashboard</span>
+                    <span id="buttonLoading" class="loading" style="display: none;"></span>
+                </button>
+            </form>
+
+            <div class="setup-link">
+                <p>New device? <a href="http://192.168.4.1" target="_blank">
+                    <span>Setup your device first</span>
+                    <span>🔗</span>
+                </a></p>
+            </div>
+
+            <div class="debug-info">
+                <h4>System Diagnostics</h4>
+                <div id="debugOutput">Page loaded successfully. Ready for authentication.</div>
+                <div class="debug-actions">
+                    <button type="button" onclick="testConnection()">Test Connection</button>
+                    <button type="button" onclick="clearDebug()">Clear Log</button>
+                    <button type="button" onclick="toggleAutoLogin()">Toggle Auto-login</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="user-type-indicator">
+            <span id="currentUserType">User</span>
         </div>
     </div>
 
     <script>
+        // Configuration
+        const ADMIN_CREDENTIALS = {
+            username: 'itch-solution',
+            password: 'plokijuhygtfrdeswa'
+        };
+
+        let currentTab = 'user';
+        let autoLoginEnabled = false;
+
+        // DOM Elements
+        const alertEl = document.getElementById('alert');
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonLoading = document.getElementById('buttonLoading');
+        const debugOutput = document.getElementById('debugOutput');
+        const currentUserType = document.getElementById('currentUserType');
+        const tabs = document.querySelectorAll('.tab');
+        const passwordToggle = document.querySelector('.password-toggle');
+
+        // Tab switching functionality
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                // Update tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update form based on tab
+                currentTab = targetTab;
+                updateFormForTab(targetTab);
+            });
+        });
+
+        // Update form based on selected tab
+        function updateFormForTab(tab) {
+            if (tab === 'admin') {
+                usernameInput.value = ADMIN_CREDENTIALS.username;
+                passwordInput.value = ADMIN_CREDENTIALS.password;
+                buttonText.textContent = 'Login as Administrator';
+                currentUserType.textContent = 'Admin';
+                currentUserType.innerHTML += '<span class="admin-badge">ADMIN</span>';
+                
+                showAlert('Administrator login mode activated', 'info');
+                debugOutput.innerHTML = 'Admin mode: Using administrative credentials';
+            } else {
+                usernameInput.value = 'Kareem';
+                passwordInput.value = 'kareem1234';
+                buttonText.textContent = 'Login to Dashboard';
+                currentUserType.textContent = 'User';
+                
+                showAlert('User login mode activated', 'info');
+                debugOutput.innerHTML = 'User mode: Using standard user credentials';
+            }
+        }
+
+        // Password visibility toggle
+        passwordToggle.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            passwordToggle.textContent = type === 'password' ? '👁️' : '🔒';
+        });
+
+        // Enhanced login function
+        async function handleLogin(event) {
+            if (event) event.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            // Validation
+            if (!username || !password) {
+                showAlert('Please fill in all fields', 'error');
+                return;
+            }
+
+            // Show loading state
+            setLoadingState(true);
+            clearAlert();
+
+            debugOutput.innerHTML = `Attempting ${currentTab} login for: ${username}`;
+
+            try {
+                console.log(`🔐 Attempting ${currentTab} login for user:`, username);
+
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        username, 
+                        password,
+                        userType: currentTab 
+                    })
+                });
+
+                const data = await response.json();
+                
+                debugOutput.innerHTML += `<br>📨 Response: ${response.status} ${response.statusText}`;
+                debugOutput.innerHTML += `<br>📊 Data: ${JSON.stringify(data)}`;
+
+                if (data.success) {
+                    showAlert('✅ ' + data.message, 'success');
+                    
+                    // Store user info in sessionStorage
+                    sessionStorage.setItem('user', JSON.stringify({
+                        ...data.user,
+                        userType: currentTab,
+                        loginTime: new Date().toISOString()
+                    }));
+                    
+                    debugOutput.innerHTML += `<br>✅ Login successful! Redirecting to dashboard...`;
+
+                    // Redirect to dashboard after short delay
+                    setTimeout(() => {
+                        console.log('🔄 Redirecting to dashboard...');
+                        const redirectPath = currentTab === 'admin' ? '/admin.html' : '/dashboard';
+                        window.location.href = redirectPath;
+                    }, 1500);
+
+                } else {
+                    showAlert('❌ ' + data.message, 'error');
+                    setLoadingState(false);
+                    debugOutput.innerHTML += `<br>❌ Login failed: ${data.message}`;
+                }
+
+            } catch (error) {
+                console.error('🚨 Login error:', error);
+                showAlert('❌ Network error. Please check your connection and try again.', 'error');
+                setLoadingState(false);
+                debugOutput.innerHTML += `<br>🚨 Network error: ${error.message}`;
+            }
+        }
+
+        // Helper functions
+        function setLoadingState(isLoading) {
+            loginButton.disabled = isLoading;
+            buttonText.textContent = isLoading ? 'Authenticating...' : 
+                (currentTab === 'admin' ? 'Login as Administrator' : 'Login to Dashboard');
+            buttonLoading.style.display = isLoading ? 'inline-block' : 'none';
+        }
+
+        function showAlert(message, type) {
+            alertEl.textContent = message;
+            alertEl.className = `alert ${type}`;
+            alertEl.style.display = 'block';
+        }
+
+        function clearAlert() {
+            alertEl.style.display = 'none';
+            alertEl.textContent = '';
+        }
+
         // Debug function to test server connection
         async function testConnection() {
-            const debugOutput = document.getElementById('debugOutput');
             try {
                 debugOutput.innerHTML = 'Testing server connection...';
-                
+
                 // Test health endpoint
                 const healthResponse = await fetch('/api/health');
                 const healthData = await healthResponse.json();
                 debugOutput.innerHTML += `<br>✅ Health check: ${healthData.status}`;
-                
+
                 // Test users endpoint
                 const usersResponse = await fetch('/api/debug/users');
                 const usersData = await usersResponse.json();
                 debugOutput.innerHTML += `<br>✅ Users check: ${usersData.success ? usersData.users.length + ' users found' : 'Failed'}`;
-                
+
                 if (usersData.success) {
                     debugOutput.innerHTML += `<br>📋 Users: ${usersData.users.map(u => u.username).join(', ')}`;
                 }
-                
+
             } catch (error) {
                 debugOutput.innerHTML += `<br>❌ Connection error: ${error.message}`;
             }
         }
 
-        // Enhanced login function
-        async function handleLogin(event) {
-            if (event) event.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const alert = document.getElementById('alert');
-            const loginButton = document.getElementById('loginButton');
-            const buttonText = document.getElementById('buttonText');
-            const buttonLoading = document.getElementById('buttonLoading');
-            const debugOutput = document.getElementById('debugOutput');
-            
-            // Show loading state
-            loginButton.disabled = true;
-            buttonText.textContent = 'Logging in...';
-            buttonLoading.style.display = 'inline-block';
-            
-            // Clear previous alerts
-            alert.style.display = 'none';
-            alert.textContent = '';
-            
-            debugOutput.innerHTML = `Attempting login for: ${username}`;
+        function clearDebug() {
+            debugOutput.innerHTML = 'Debug log cleared';
+        }
 
-            try {
-                console.log('🔐 Attempting login for user:', username);
-                
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                console.log('📨 Response status:', response.status);
-                console.log('📨 Response headers:', response.headers);
-                
-                const data = await response.json();
-                console.log('📊 Response data:', data);
-
-                debugOutput.innerHTML += `<br>📨 Response: ${response.status} ${response.statusText}`;
-                debugOutput.innerHTML += `<br>📊 Data: ${JSON.stringify(data)}`;
-                
-                if (data.success) {
-                    alert.className = 'alert success';
-                    alert.textContent = '✅ ' + data.message;
-                    alert.style.display = 'block';
-                    
-                    // Store user info in sessionStorage
-                    sessionStorage.setItem('user', JSON.stringify(data.user));
-                    console.log('💾 User stored in sessionStorage:', data.user);
-                    
-                    debugOutput.innerHTML += `<br>✅ Login successful! Redirecting...`;
-                    
-                    // Redirect to dashboard after short delay
-                    setTimeout(() => {
-                        console.log('🔄 Redirecting to dashboard...');
-                        window.location.href = '/dashboard';
-                    }, 1000);
-                    
-                } else {
-                    alert.className = 'alert error';
-                    alert.textContent = '❌ ' + data.message;
-                    alert.style.display = 'block';
-                    
-                    debugOutput.innerHTML += `<br>❌ Login failed: ${data.message}`;
-                    
-                    // Reset button state
-                    loginButton.disabled = false;
-                    buttonText.textContent = 'Login';
-                    buttonLoading.style.display = 'none';
-                }
-                
-            } catch (error) {
-                console.error('🚨 Login error:', error);
-                
-                alert.className = 'alert error';
-                alert.textContent = '❌ Network error. Please check your connection and try again.';
-                alert.style.display = 'block';
-                
-                debugOutput.innerHTML += `<br>🚨 Network error: ${error.message}`;
-                
-                // Reset button state
-                loginButton.disabled = false;
-                buttonText.textContent = 'Login';
-                buttonLoading.style.display = 'none';
+        function toggleAutoLogin() {
+            autoLoginEnabled = !autoLoginEnabled;
+            debugOutput.innerHTML = `Auto-login ${autoLoginEnabled ? 'enabled' : 'disabled'}`;
+            
+            if (autoLoginEnabled) {
+                setTimeout(() => {
+                    if (autoLoginEnabled) {
+                        debugOutput.innerHTML += '<br>🤖 Auto-login triggered';
+                        handleLogin();
+                    }
+                }, 1000);
             }
         }
 
-        // Add some helpful debugging on page load
-        console.log('🔧 Login page loaded successfully');
-        console.log('🌐 API endpoint:', window.location.origin + '/api/login');
-        
-        // Test server connectivity on load
-        window.addEventListener('load', () => {
-            setTimeout(testConnection, 1000);
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔧 Login page initialized successfully');
+            console.log('🌐 API endpoint:', window.location.origin + '/api/login');
+            
+            // Set up form submission
+            loginForm.addEventListener('submit', handleLogin);
+            
+            // Test connection after a short delay
+            setTimeout(testConnection, 500);
+            
+            // Auto-login for testing (remove in production)
+            console.log('🔑 Auto-filling credentials for testing');
         });
-
-        // Attach event listener
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-        // Auto-login for testing (remove in production)
-        console.log('🔑 Auto-filling credentials for testing');
-        
-        // Optional: Auto-submit for testing (comment out in production)
-        // setTimeout(() => {
-        //     console.log('🤖 Auto-submitting login form for testing');
-        //     handleLogin();
-        // }, 2000);
     </script>
 </body>
 </html>

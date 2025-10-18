@@ -10,6 +10,7 @@ const WebSocket = require('ws');
 const cron = require('node-cron');
 
 const app = express();
+app.set('trust proxy', '127.0.0.1');
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
