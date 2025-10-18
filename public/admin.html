@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenTech - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2d3748;
+            --secondary: #4CAF50;
+            --accent: #FF9800;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #3498db;
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #e1e5e9;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 0;
+            position: fixed;
+            width: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .logo {
+            padding: 30px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .logo p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin: 5px 0;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: rgba(255,255,255,0.3);
+        }
+
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: var(--secondary);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            grid-column: 2;
+            padding: 30px;
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: var(--primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Admin Stats */
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-left: 4px solid var(--info);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            color: var(--text-light);
+            min-width: 120px;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary), #45a049);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #e67e22);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #c0392b);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, var(--info), #2980b9);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--card-bg);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            background: var(--background);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid var(--border);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+            border-radius: 6px;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .progress-stat {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .progress-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .progress-stat-value {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Device Grid */
+        .devices-grid {
+            display: grid;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .device-card {
+            background: var(--background);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .device-card.offline {
+            border-left-color: var(--danger);
+            opacity: 0.7;
+        }
+
+        .device-card.updating {
+            border-left-color: var(--warning);
+            background: linear-gradient(90deg, var(--background) 0%, #fff3cd 100%);
+        }
+
+        .device-info {
+            flex: 1;
+        }
+
+        .device-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-status {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .device-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-updating {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: var(--background);
+        }
+
+        /* Bulk Update Progress */
+        .bulk-update {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .bulk-update-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .bulk-update-title {
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-progress-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .device-progress-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin: 8px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .device-progress-info {
+            flex: 1;
+        }
+
+        .device-progress-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .device-progress-status {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .device-progress-bar {
+            width: 200px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .device-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 20px 25px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            border-left: 5px solid var(--secondary);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left-color: var(--secondary);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        .toast.info {
+            border-left-color: var(--info);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--secondary);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: var(--secondary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+            background: var(--background);
+        }
+
+        /* Login Modal */
+        .login-modal {
+            display: flex;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                grid-column: 1;
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .device-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .device-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal login-modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 25px; text-align: center;">
+                <i class="fas fa-user-shield"></i> GreenTech Admin Login
+            </h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" value="admin" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" value="admin123" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">
+                    <i class="fas fa-sign-in-alt"></i> Login to Admin Panel
+                </button>
+            </form>
+            <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h4>Demo Credentials:</h4>
+                <p><strong>Admin:</strong> admin / admin123</p>
+                <p><strong>User:</strong> kareem / user123</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container" style="display: none;" id="mainApp">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>🌱 GreenTech</h1>
+                <p>Admin Control System</p>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-tab="fota">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>FOTA Management</span>
+                </div>
+                <div class="nav-item" data-tab="devices">
+                    <i class="fas fa-microchip"></i>
+                    <span>Device Management</span>
+                </div>
+                <div class="nav-item" data-tab="users">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </div>
+                <div class="nav-item" data-tab="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>System Analytics</span>
+                </div>
+                <div class="nav-item" data-tab="settings">
+                    <i class="fas fa-cogs"></i>
+                    <span>System Settings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-user-shield"></i> Admin Control Panel</h1>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <div class="user-details">
+                            <div class="user-name" id="usernameDisplay">Admin</div>
+                            <div class="user-role">Administrator</div>
+                        </div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Statistics -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📱</div>
+                    <div class="stat-value" id="totalDevices">3</div>
+                    <div class="stat-label">Total Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-value" id="onlineDevices">2</div>
+                    <div class="stat-label">Online Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-value" id="pendingUpdates">0</div>
+                    <div class="stat-label">Pending Updates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="firmwareVersions">1</div>
+                    <div class="stat-label">Firmware Versions</div>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="tabs">
+                <button class="tab active" data-tab="fota">FOTA Management</button>
+                <button class="tab" data-tab="devices">Device Management</button>
+                <button class="tab" data-tab="users">User Management</button>
+                <button class="tab" data-tab="analytics">System Analytics</button>
+                <button class="tab" data-tab="settings">System Settings</button>
+            </div>
+
+            <!-- FOTA Management Tab -->
+            <div id="fota" class="tab-content active">
+                <!-- Firmware Upload Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-upload"></i>
+                            Firmware Upload
+                        </h2>
+                    </div>
+
+                    <form id="uploadForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firmwareFile">
+                                    <i class="fas fa-file-archive"></i> Firmware File
+                                </label>
+                                <input type="file" id="firmwareFile" accept=".bin,.bin.gz" required>
+                                <small style="color: var(--text-light); font-size: 0.85rem;">
+                                    Supported formats: .bin, .bin.gz (Max: 50MB)
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label for="firmwareVersion">
+                                    <i class="fas fa-tag"></i> Version Number
+                                </label>
+                                <input type="text" id="firmwareVersion" placeholder="e.g., 2.1.0" required
+                                       pattern="^[0-9]+\.[0-9]+\.[0-9]+$">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firmwareDescription">
+                                    <i class="fas fa-align-left"></i> Description
+                                </label>
+                                <textarea id="firmwareDescription" rows="3"
+                                          placeholder="Describe the changes in this firmware version"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="compatibleDevices">
+                                    <i class="fas fa-microchip"></i> Compatible Devices
+                                </label>
+                                <input type="text" id="compatibleDevices"
+                                       placeholder="e.g., ESP32, ESP8266 (comma separated)">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">
+                            <i class="fas fa-cloud-upload-alt"></i> Upload Firmware
+                        </button>
+                    </form>
+
+                    <!-- Upload Progress -->
+                    <div id="uploadProgress" class="progress-container" style="display: none;">
+                        <div class="progress-header">
+                            <div class="progress-title">
+                                <i class="fas fa-upload"></i>
+                                Uploading Firmware
+                            </div>
+                            <div class="progress-percentage" id="uploadPercentage">0%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="uploadProgressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="progress-stat">
+                                <div class="progress-stat-label">File Size</div>
+                                <div class="progress-stat-value" id="uploadFileSize">0 MB</div>
+                            </div>
+                            <div class="progress-stat">
+                                <div class="progress-stat-label">Uploaded</div>
+                                <div class="progress-stat-value" id="uploadedSize">0 MB</div>
+                            </div>
+                            <div class="progress-stat">
+                                <div class="progress-stat-label">Speed</div>
+                                <div class="progress-stat-value" id="uploadSpeed">0 KB/s</div>
+                            </div>
+                            <div class="progress-stat">
+                                <div class="progress-stat-label">Time Left</div>
+                                <div class="progress-stat-value" id="uploadTimeLeft">--</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Firmware Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-box"></i>
+                            Current Firmware
+                        </h2>
+                        <button class="btn btn-info" onclick="loadFirmwareInfo()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="currentFirmwareInfo">
+                        <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                            <p>No firmware uploaded yet</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Upload a firmware file to get started</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Device Update Control -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-broadcast-tower"></i>
+                            Device Update Control
+                        </h2>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="targetDevice">
+                                <i class="fas fa-microchip"></i> Target Device
+                            </label>
+                            <select id="targetDevice">
+                                <option value="">Select a device...</option>
+                                <option value="greentech-device-001">greentech-device-001 (v1.2.0)</option>
+                                <option value="greentech-device-002">greentech-device-002 (v1.1.5)</option>
+                                <option value="greentech-device-003">greentech-device-003 (v1.0.8)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateStrategy">
+                                <i class="fas fa-chess-board"></i> Update Strategy
+                            </label>
+                            <select id="updateStrategy">
+                                <option value="single">Update Single Device</option>
+                                <option value="group">Update Device Group</option>
+                                <option value="all">Update All Devices</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button class="btn btn-warning" onclick="triggerSingleUpdate()" id="singleUpdateBtn">
+                            <i class="fas fa-bolt"></i> Update Device
+                        </button>
+                        <button class="btn btn-success" onclick="triggerBulkUpdate()" id="bulkUpdateBtn">
+                            <i class="fas fa-sync-alt"></i> Update All Devices
+                        </button>
+                        <button class="btn btn-info" onclick="scanForDevices()">
+                            <i class="fas fa-search"></i> Scan Network
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bulk Update Progress -->
+                <div id="bulkUpdateProgress" class="bulk-update" style="display: none;">
+                    <div class="bulk-update-header">
+                        <div class="bulk-update-title">
+                            <i class="fas fa-sync-alt fa-spin"></i>
+                            Bulk Firmware Update in Progress
+                        </div>
+                        <div class="progress-percentage" id="bulkUpdatePercentage">0%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="bulkUpdateProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="progress-stat">
+                            <div class="progress-stat-label">Total Devices</div>
+                            <div class="progress-stat-value" id="bulkTotalDevices">0</div>
+                        </div>
+                        <div class="progress-stat">
+                            <div class="progress-stat-label">Completed</div>
+                            <div class="progress-stat-value" id="bulkCompleted">0</div>
+                        </div>
+                        <div class="progress-stat">
+                            <div class="progress-stat-label">Updating</div>
+                            <div class="progress-stat-value" id="bulkUpdating">0</div>
+                        </div>
+                        <div class="progress-stat">
+                            <div class="progress-stat-label">Failed</div>
+                            <div class="progress-stat-value" id="bulkFailed">0</div>
+                        </div>
+                    </div>
+                    <div class="device-progress-list" id="bulkUpdateDevicesList">
+                        <!-- Individual device progress will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Device Management Tab -->
+            <div id="devices" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-microchip"></i>
+                            Connected Devices
+                        </h2>
+                        <button class="btn btn-info" onclick="refreshDevices()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="devices-grid" id="devicesList">
+                        <!-- Devices will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management Tab -->
+            <div id="users" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-users"></i>
+                            User Accounts
+                        </h2>
+                        <button class="btn btn-success" onclick="showCreateUserModal()">
+                            <i class="fas fa-user-plus"></i> Add User
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Device ID</th>
+                                    <th>Role</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            System Analytics
+                        </h2>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Time Range</label>
+                            <select id="analyticsRange">
+                                <option value="24h">Last 24 Hours</option>
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                                <option value="90d">Last 90 Days</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Metric</label>
+                            <select id="analyticsMetric">
+                                <option value="uptime">Device Uptime</option>
+                                <option value="updates">Firmware Updates</option>
+                                <option value="errors">System Errors</option>
+                                <option value="usage">Resource Usage</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="height: 400px; margin-top: 20px;">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-cogs"></i>
+                            System Configuration
+                        </h2>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mqttBroker">MQTT Broker URL</label>
+                            <input type="text" id="mqttBroker" value="mqtt://broker.greentech.com:1883">
+                        </div>
+                        <div class="form-group">
+                            <label for="databaseUrl">Database URL</label>
+                            <input type="text" id="databaseUrl" value="mongodb://localhost:27017/greentech">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="logLevel">Log Level</label>
+                            <select id="logLevel">
+                                <option value="error">Error</option>
+                                <option value="warn">Warning</option>
+                                <option value="info" selected>Info</option>
+                                <option value="debug">Debug</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="backupFrequency">Backup Frequency</label>
+                            <select id="backupFrequency">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="saveSystemSettings()">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                        <button class="btn btn-info" onclick="testSystemConnections()">
+                            <i class="fas fa-network-wired"></i> Test Connections
+                        </button>
+                        <button class="btn btn-warning" onclick="createSystemBackup()">
+                            <i class="fas fa-download"></i> Create Backup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div id="createUserModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="hideCreateUserModal()">&times;</button>
+            <h2 style="margin-bottom: 25px;"><i class="fas fa-user-plus"></i> Create New User</h2>
+            <form id="createUserForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newUsername">Username</label>
+                        <input type="text" id="newUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newUserRole">Role</label>
+                        <select id="newUserRole" required>
+                            <option value="user">User</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newUserPassword">Password</label>
+                        <input type="password" id="newUserPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newUserDeviceId">Device ID</label>
+                        <input type="text" id="newUserDeviceId" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%; padding: 15px;">
+                    <i class="fas fa-user-plus"></i> Create User
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <div class="toast-content">
+            <div class="toast-message" id="toastMessage">Operation completed successfully</div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        const appState = {
+            user: null,
+            devices: [
+                {
+                    deviceId: 'greentech-device-001',
+                    connected: true,
+                    version: '1.2.0',
+                    ip: '192.168.1.100',
+                    lastSeen: new Date(),
+                    status: 'online',
+                    type: 'ESP32'
+                },
+                {
+                    deviceId: 'greentech-device-002',
+                    connected: true,
+                    version: '1.1.5',
+                    ip: '192.168.1.101',
+                    lastSeen: new Date(Date.now() - 300000),
+                    status: 'online',
+                    type: 'ESP8266'
+                },
+                {
+                    deviceId: 'greentech-device-003',
+                    connected: false,
+                    version: '1.0.8',
+                    ip: '192.168.1.102',
+                    lastSeen: new Date(Date.now() - 3600000),
+                    status: 'offline',
+                    type: 'ESP32'
+                }
+            ],
+            firmware: null,
+            activeUpdates: new Map(),
+            bulkUpdateStats: {
+                total: 0,
+                completed: 0,
+                updating: 0,
+                failed: 0
+            },
+            analyticsChart: null
+        };
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeApplication();
+            initializeTabs();
+            loadInitialData();
+        });
+
+        // Application initialization
+        async function initializeApplication() {
+            // Check authentication (simulated)
+            const savedUser = localStorage.getItem('greentech_user');
+            
+            if (savedUser) {
+                appState.user = JSON.parse(savedUser);
+                showMainApp();
+            } else {
+                showLoginModal();
+            }
+
+            // Initialize event listeners
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('uploadForm').addEventListener('submit', handleFirmwareUpload);
+            document.getElementById('createUserForm').addEventListener('submit', handleCreateUser);
+            
+            // Analytics filters
+            document.getElementById('analyticsRange').addEventListener('change', loadAnalytics);
+            document.getElementById('analyticsMetric').addEventListener('change', loadAnalytics);
+        }
+
+        // Handle login
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Simple authentication (in real app, this would call an API)
+            if ((username === 'admin' && password === 'admin123') || 
+                (username === 'kareem' && password === 'user123')) {
+                
+                appState.user = {
+                    username: username,
+                    role: username === 'admin' ? 'admin' : 'user',
+                    deviceId: username === 'admin' ? 'admin-device' : 'greentech-device-001'
+                };
+                
+                localStorage.setItem('greentech_user', JSON.stringify(appState.user));
+                showMainApp();
+                showToast('Login successful!', 'success');
+            } else {
+                showToast('Invalid credentials', 'error');
+            }
+        }
+
+        // Show login modal
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+
+        // Show main application
+        function showMainApp() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'grid';
+            
+            // Update UI with user info
+            document.getElementById('usernameDisplay').textContent = appState.user.username;
+            document.getElementById('userAvatar').textContent = appState.user.username.charAt(0).toUpperCase();
+        }
+
+        // Initialize tabs
+        function initializeTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+
+                    // Update active tab
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update active content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabName).classList.add('active');
+
+                    // Load tab-specific data
+                    loadTabData(tabName);
+                });
+            });
+
+            // Initialize navigation items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+
+                    // Update active nav item
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update active tab
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+
+                    // Update active content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(tabName).classList.add('active');
+
+                    loadTabData(tabName);
+                });
+            });
+        }
+
+        // Load tab-specific data
+        function loadTabData(tabName) {
+            switch (tabName) {
+                case 'fota':
+                    loadFirmwareInfo();
+                    break;
+                case 'devices':
+                    loadDevices();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'settings':
+                    loadSystemSettings();
+                    break;
+            }
+        }
+
+        // Load initial data
+        async function loadInitialData() {
+            await loadFirmwareInfo();
+            await loadDevices();
+            await loadUsers();
+            await loadAnalytics();
+            updateStats();
+        }
+
+        // Load statistics
+        function updateStats() {
+            document.getElementById('totalDevices').textContent = appState.devices.length;
+            document.getElementById('onlineDevices').textContent = appState.devices.filter(d => d.connected).length;
+            document.getElementById('pendingUpdates').textContent = appState.activeUpdates.size;
+            document.getElementById('firmwareVersions').textContent = appState.firmware ? '1' : '0';
+        }
+
+        // Load firmware information
+        async function loadFirmwareInfo() {
+            const container = document.getElementById('currentFirmwareInfo');
+
+            if (appState.firmware) {
+                const fw = appState.firmware;
+                const uploadDate = new Date(fw.uploadedAt).toLocaleString();
+                const fileSize = (fw.size / 1024 / 1024).toFixed(2);
+
+                container.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <h3 style="color: var(--primary); margin-bottom: 10px;">${fw.originalName}</h3>
+                            <p style="color: var(--text-light); margin-bottom: 15px;">Version ${fw.version}</p>
+                            <div style="display: flex; gap: 10px;">
+                                <span class="status-badge status-online">Active</span>
+                                <span class="status-badge status-online">Ready</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="margin-bottom: 10px;">
+                                <strong>File Size:</strong> ${fileSize} MB
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <strong>Uploaded:</strong> ${uploadDate}
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <strong>MD5:</strong> <code>${fw.md5 || 'Not provided'}</code>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <strong>Compatible with:</strong> ${fw.compatibleDevices.join(', ')}
+                            </div>
+                            ${fw.description ? `<div><strong>Description:</strong> ${fw.description}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No firmware uploaded yet</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Upload a firmware file to get started</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load all devices
+        async function loadDevices() {
+            renderDevices();
+        }
+
+        // Render devices list
+        function renderDevices() {
+            const container = document.getElementById('devicesList');
+
+            if (appState.devices.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-microchip" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>No devices connected</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = appState.devices.map(device => {
+                const isUpdating = appState.activeUpdates.has(device.deviceId);
+                const updateInfo = isUpdating ? appState.activeUpdates.get(device.deviceId) : null;
+
+                return `
+                    <div class="device-card ${!device.connected ? 'offline' : ''} ${isUpdating ? 'updating' : ''}">
+                        <div class="device-info">
+                            <div class="device-name">
+                                ${device.deviceId}
+                                <span class="status-badge ${device.connected ? 'status-online' : 'status-offline'}">
+                                    ${device.connected ? 'ONLINE' : 'OFFLINE'}
+                                </span>
+                                ${isUpdating ? '<span class="status-badge status-updating">UPDATING</span>' : ''}
+                            </div>
+                            <div class="device-status">
+                                <i class="fas fa-microchip"></i> ${device.type} •
+                                v${device.version} •
+                                ${device.ip} •
+                                Last seen: ${new Date(device.lastSeen).toLocaleString()}
+                                ${isUpdating ? ` • Progress: ${updateInfo.progress}%` : ''}
+                            </div>
+                        </div>
+                        <div class="device-actions">
+                            <button class="btn btn-sm btn-warning" onclick="triggerDeviceUpdate('${device.deviceId}')"
+                                    ${!device.connected || isUpdating ? 'disabled' : ''}>
+                                <i class="fas fa-bolt"></i> Update
+                            </button>
+                            <button class="btn btn-sm btn-info" onclick="viewDeviceDetails('${device.deviceId}')">
+                                <i class="fas fa-info-circle"></i> Details
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="rebootDevice('${device.deviceId}')"
+                                    ${!device.connected ? 'disabled' : ''}>
+                                <i class="fas fa-power-off"></i> Reboot
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle firmware upload
+        async function handleFirmwareUpload(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('firmwareFile');
+            const versionInput = document.getElementById('firmwareVersion');
+            const descriptionInput = document.getElementById('firmwareDescription');
+            const compatibleInput = document.getElementById('compatibleDevices');
+
+            const file = fileInput.files[0];
+            if (!file) {
+                showToast('Please select a firmware file', 'warning');
+                return;
+            }
+
+            // Validate version
+            const version = versionInput.value;
+            if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(version)) {
+                showToast('Please enter a valid version number (e.g., 1.2.0)', 'error');
+                return;
+            }
+
+            // Simulate upload with progress
+            await simulateFirmwareUpload(file, version, descriptionInput.value, compatibleInput.value);
+        }
+
+        // Simulate firmware upload with progress
+        async function simulateFirmwareUpload(file, version, description, compatibleDevices) {
+            const progressContainer = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const percentage = document.getElementById('uploadPercentage');
+            const fileSize = document.getElementById('uploadFileSize');
+            const uploadedSize = document.getElementById('uploadedSize');
+            const speed = document.getElementById('uploadSpeed');
+            const timeLeft = document.getElementById('uploadTimeLeft');
+
+            progressContainer.style.display = 'block';
+            
+            const totalSize = file.size;
+            let uploaded = 0;
+            const startTime = Date.now();
+
+            fileSize.textContent = (totalSize / 1024 / 1024).toFixed(2) + ' MB';
+
+            // Simulate upload progress
+            const uploadInterval = setInterval(() => {
+                uploaded += totalSize / 20; // 5% increments
+                if (uploaded > totalSize) uploaded = totalSize;
+
+                const percentComplete = (uploaded / totalSize) * 100;
+                const elapsedTime = (Date.now() - startTime) / 1000;
+                const uploadSpeed = uploaded / elapsedTime / 1024;
+                const remainingTime = (totalSize - uploaded) / (uploadSpeed * 1024);
+
+                progressBar.style.width = percentComplete + '%';
+                percentage.textContent = Math.round(percentComplete) + '%';
+                uploadedSize.textContent = (uploaded / 1024 / 1024).toFixed(2) + ' MB';
+                speed.textContent = uploadSpeed.toFixed(1) + ' KB/s';
+
+                if (remainingTime > 0) {
+                    const minutes = Math.floor(remainingTime / 60);
+                    const seconds = Math.floor(remainingTime % 60);
+                    timeLeft.textContent = `${minutes}m ${seconds}s`;
+                }
+
+                if (percentComplete >= 100) {
+                    clearInterval(uploadInterval);
+                    
+                    // Create firmware object
+                    appState.firmware = {
+                        originalName: file.name,
+                        filename: 'firmware-' + Date.now() + '.bin',
+                        size: file.size,
+                        version: version,
+                        description: description,
+                        compatibleDevices: compatibleDevices ? compatibleDevices.split(',').map(s => s.trim()) : ['ESP32', 'ESP8266'],
+                        uploadedAt: new Date(),
+                        md5: 'simulated_md5_hash_' + Date.now()
+                    };
+
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                        showToast('Firmware uploaded successfully!', 'success');
+                        loadFirmwareInfo();
+                        updateStats();
+                        
+                        // Reset form
+                        document.getElementById('uploadForm').reset();
+                    }, 1000);
+                }
+            }, 200);
+        }
+
+        // Trigger single device update
+        async function triggerSingleUpdate() {
+            const deviceId = document.getElementById('targetDevice').value;
+            if (!deviceId) {
+                showToast('Please select a device', 'warning');
+                return;
+            }
+
+            await triggerDeviceUpdate(deviceId);
+        }
+
+        // Trigger device update
+        async function triggerDeviceUpdate(deviceId) {
+            if (!appState.firmware) {
+                showToast('No firmware available. Please upload firmware first.', 'warning');
+                return;
+            }
+
+            const device = appState.devices.find(d => d.deviceId === deviceId);
+            if (!device) {
+                showToast('Device not found', 'error');
+                return;
+            }
+
+            if (!device.connected) {
+                showToast('Device is offline', 'warning');
+                return;
+            }
+
+            // Add to active updates
+            appState.activeUpdates.set(deviceId, {
+                progress: 0,
+                status: 'starting',
+                startedAt: new Date(),
+                firmwareVersion: appState.firmware.version
+            });
+
+            showToast(`Update started for ${deviceId}`, 'success');
+            updateDevicesDisplay();
+            updateStats();
+
+            // Simulate update progress
+            simulateUpdateProgress(deviceId);
+        }
+
+        // Trigger bulk update
+        async function triggerBulkUpdate() {
+            if (!appState.firmware) {
+                showToast('No firmware available. Please upload firmware first.', 'warning');
+                return;
+            }
+
+            const onlineDevices = appState.devices.filter(d => d.connected);
+            if (onlineDevices.length === 0) {
+                showToast('No online devices available for update', 'warning');
+                return;
+            }
+
+            appState.bulkUpdateStats = {
+                total: onlineDevices.length,
+                completed: 0,
+                updating: onlineDevices.length,
+                failed: 0
+            };
+
+            // Show bulk update progress
+            const bulkProgress = document.getElementById('bulkUpdateProgress');
+            bulkProgress.style.display = 'block';
+            updateBulkUpdateProgress();
+
+            // Start updates for all online devices
+            onlineDevices.forEach(device => {
+                appState.activeUpdates.set(device.deviceId, {
+                    progress: 0,
+                    status: 'starting',
+                    startedAt: new Date(),
+                    firmwareVersion: appState.firmware.version
+                });
+
+                simulateUpdateProgress(device.deviceId, true);
+            });
+
+            showToast(`Bulk update initiated for ${onlineDevices.length} devices`, 'success');
+            updateDevicesDisplay();
+            updateStats();
+        }
+
+        // Simulate update progress
+        function simulateUpdateProgress(deviceId, isBulk = false) {
+            const updateInterval = setInterval(() => {
+                const updateInfo = appState.activeUpdates.get(deviceId);
+                if (!updateInfo) {
+                    clearInterval(updateInterval);
+                    return;
+                }
+
+                // Increment progress
+                updateInfo.progress += 5 + Math.random() * 15;
+                if (updateInfo.progress > 100) updateInfo.progress = 100;
+
+                updateInfo.status = updateInfo.progress < 100 ? 'updating' : 'completed';
+
+                // Update display
+                updateDevicesDisplay();
+
+                if (isBulk) {
+                    updateBulkUpdateProgress();
+                }
+
+                // Check if completed
+                if (updateInfo.progress >= 100) {
+                    clearInterval(updateInterval);
+                    
+                    if (isBulk) {
+                        appState.bulkUpdateStats.completed++;
+                        appState.bulkUpdateStats.updating--;
+                        
+                        // Update device version
+                        const device = appState.devices.find(d => d.deviceId === deviceId);
+                        if (device) {
+                            device.version = appState.firmware.version;
+                        }
+
+                        // Remove from active updates after delay
+                        setTimeout(() => {
+                            appState.activeUpdates.delete(deviceId);
+                            updateDevicesDisplay();
+                            updateStats();
+                            updateBulkUpdateProgress();
+                        }, 2000);
+                    } else {
+                        // Update device version for single update
+                        const device = appState.devices.find(d => d.deviceId === deviceId);
+                        if (device) {
+                            device.version = appState.firmware.version;
+                        }
+
+                        // Remove from active updates after delay
+                        setTimeout(() => {
+                            appState.activeUpdates.delete(deviceId);
+                            updateDevicesDisplay();
+                            updateStats();
+                        }, 2000);
+                    }
+                }
+            }, 500 + Math.random() * 1000);
+        }
+
+        // Update bulk update progress
+        function updateBulkUpdateProgress() {
+            const total = appState.bulkUpdateStats.total;
+            const completed = appState.bulkUpdateStats.completed;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('bulkUpdatePercentage').textContent = percentage + '%';
+            document.getElementById('bulkUpdateProgressBar').style.width = percentage + '%';
+            document.getElementById('bulkTotalDevices').textContent = total;
+            document.getElementById('bulkCompleted').textContent = completed;
+            document.getElementById('bulkUpdating').textContent = appState.bulkUpdateStats.updating;
+            document.getElementById('bulkFailed').textContent = appState.bulkUpdateStats.failed;
+
+            // Update device progress list
+            const container = document.getElementById('bulkUpdateDevicesList');
+            const updatingDevices = Array.from(appState.activeUpdates.entries());
+
+            if (updatingDevices.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-light);">No devices currently updating</div>';
+            } else {
+                container.innerHTML = updatingDevices.map(([deviceId, updateInfo]) => {
+                    const device = appState.devices.find(d => d.deviceId === deviceId);
+                    const deviceName = device ? device.deviceId : deviceId;
+                    
+                    return `
+                        <div class="device-progress-item">
+                            <div class="device-progress-info">
+                                <div class="device-progress-name">${deviceName}</div>
+                                <div class="device-progress-status">${updateInfo.status}</div>
+                            </div>
+                            <div class="device-progress-bar">
+                                <div class="device-progress-fill" style="width: ${updateInfo.progress}%"></div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-light); min-width: 40px;">
+                                ${updateInfo.progress}%
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Hide bulk update when complete
+            if (completed >= total && total > 0) {
+                setTimeout(() => {
+                    document.getElementById('bulkUpdateProgress').style.display = 'none';
+                    const message = `Bulk update completed! ${completed} devices updated successfully`;
+                    showToast(message, 'success');
+                }, 3000);
+            }
+        }
+
+        // Update devices display
+        function updateDevicesDisplay() {
+            renderDevices();
+        }
+
+        // Load users
+        async function loadUsers() {
+            const users = [
+                {
+                    username: 'admin',
+                    deviceId: 'admin-device',
+                    role: 'admin',
+                    lastLogin: new Date().toISOString(),
+                    status: 'active'
+                },
+                {
+                    username: 'kareem',
+                    deviceId: 'greentech-device-001',
+                    role: 'user',
+                    lastLogin: new Date(Date.now() - 86400000).toISOString(),
+                    status: 'active'
+                }
+            ];
+
+            const table = document.getElementById('usersTable');
+            table.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.username}</td>
+                    <td>${user.deviceId}</td>
+                    <td><span class="status-badge ${user.role === 'admin' ? 'status-updating' : 'status-online'}">${user.role}</span></td>
+                    <td>${new Date(user.lastLogin).toLocaleString()}</td>
+                    <td><span class="status-badge status-online">Active</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info">Edit</button>
+                        <button class="btn btn-sm btn-danger" ${user.username === 'admin' ? 'disabled' : ''}>Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Handle create user
+        async function handleCreateUser(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newUserPassword').value;
+            const role = document.getElementById('newUserRole').value;
+            const deviceId = document.getElementById('newUserDeviceId').value;
+
+            // Simulate user creation
+            showToast(`User ${username} created successfully`, 'success');
+            hideCreateUserModal();
+            
+            // Reload users to show the new one
+            setTimeout(loadUsers, 1000);
+        }
+
+        // Load analytics
+        async function loadAnalytics() {
+            const range = document.getElementById('analyticsRange').value;
+            const metric = document.getElementById('analyticsMetric').value;
+
+            renderAnalyticsChart(range, metric);
+        }
+
+        // Render analytics chart
+        function renderAnalyticsChart(range, metric) {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+
+            if (appState.analyticsChart) {
+                appState.analyticsChart.destroy();
+            }
+
+            const metricData = {
+                uptime: [95, 92, 98, 96, 97, 99, 94],
+                updates: [12, 19, 15, 22, 18, 25, 20],
+                errors: [2, 1, 0, 3, 1, 0, 2],
+                usage: [65, 72, 68, 75, 70, 78, 73]
+            };
+
+            const metricLabels = {
+                uptime: 'Device Uptime (%)',
+                updates: 'Successful Updates',
+                errors: 'System Errors',
+                usage: 'Resource Usage (%)'
+            };
+
+            appState.analyticsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: metricLabels[metric],
+                        data: metricData[metric],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: `${metricLabels[metric]} - Last ${range}`
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // System settings functions
+        function loadSystemSettings() {
+            // Settings are pre-populated in HTML
+        }
+
+        function saveSystemSettings() {
+            showToast('System settings saved successfully', 'success');
+        }
+
+        function testSystemConnections() {
+            showToast('Testing system connections...', 'info');
+            setTimeout(() => {
+                showToast('All connections tested successfully', 'success');
+            }, 2000);
+        }
+
+        function createSystemBackup() {
+            showToast('System backup created successfully', 'success');
+        }
+
+        // Modal functions
+        function showCreateUserModal() {
+            document.getElementById('createUserModal').style.display = 'flex';
+        }
+
+        function hideCreateUserModal() {
+            document.getElementById('createUserModal').style.display = 'none';
+            document.getElementById('createUserForm').reset();
+        }
+
+        // Utility functions
+        function scanForDevices() {
+            showToast('Scanning network for devices...', 'info');
+            setTimeout(() => {
+                // Simulate finding new devices occasionally
+                if (Math.random() > 0.7) {
+                    const newDevice = {
+                        deviceId: 'greentech-device-' + (appState.devices.length + 1).toString().padStart(3, '0'),
+                        connected: true,
+                        version: '1.0.0',
+                        ip: `192.168.1.${100 + appState.devices.length}`,
+                        lastSeen: new Date(),
+                        status: 'online',
+                        type: 'ESP32'
+                    };
+                    appState.devices.push(newDevice);
+                    showToast('New device discovered!', 'success');
+                } else {
+                    showToast('Network scan completed', 'info');
+                }
+                loadDevices();
+                updateStats();
+            }, 2000);
+        }
+
+        function refreshDevices() {
+            // Simulate device status changes
+            appState.devices.forEach(device => {
+                if (Math.random() > 0.7) {
+                    device.connected = !device.connected;
+                    device.status = device.connected ? 'online' : 'offline';
+                    device.lastSeen = new Date();
+                }
+            });
+            
+            loadDevices();
+            updateStats();
+            showToast('Devices list refreshed', 'info');
+        }
+
+        function viewDeviceDetails(deviceId) {
+            showToast(`Viewing details for ${deviceId}`, 'info');
+            // In a real app, this would open a modal with device details
+        }
+
+        function rebootDevice(deviceId) {
+            if (confirm(`Are you sure you want to reboot ${deviceId}?`)) {
+                showToast(`Rebooting ${deviceId}...`, 'warning');
+                // Simulate reboot
+                setTimeout(() => {
+                    const device = appState.devices.find(d => d.deviceId === deviceId);
+                    if (device) {
+                        device.connected = true;
+                        device.status = 'online';
+                        device.lastSeen = new Date();
+                        loadDevices();
+                        showToast(`${deviceId} rebooted successfully`, 'success');
+                    }
+                }, 3000);
+            }
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = toast.querySelector('.toast-icon');
+
+            toastMessage.textContent = message;
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+
+            toastIcon.className = `fas ${icons[type]} toast-icon`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('greentech_user');
+            showLoginModal();
+            showToast('Logged out successfully', 'info');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = ['createUserModal', 'loginModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            console.error('Global error:', e.error);
+            showToast('An unexpected error occurred', 'error');
+        });
+    </script>
+</body>
+</html>
